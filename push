@@ -13,7 +13,7 @@ GIT_TOKEN="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"
 # Define the repository URL (replace with the actual repo)
 REPO_URL="https://github.com/JusteenDev/liveserver-cli.git"
 
-# Full URL including token for authentication
+# Correct URL without the extra https://
 REMOTE_URL="https://$GIT_USERNAME:$GIT_TOKEN@$REPO_URL"
 
 # Commit message (automated)
