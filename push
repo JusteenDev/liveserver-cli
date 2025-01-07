@@ -19,16 +19,22 @@ REMOTE_URL="https://$GIT_USERNAME:$GIT_TOKEN@$REPO_URL"
 # Commit message (automated)
 commit_message="Auto commit - $(date)"
 
-# Loop to commit and push every 10 seconds
+# Specify the file to modify
+FILE_NAME="your_file.txt"  # Replace this with your actual file name
+
+# Loop to modify, commit, and push every 10 seconds
 while true; do
-  # Check if there are any changes
+  # Check if there are any changes in the git repo
   git status --porcelain | grep -q . || { echo "No changes to commit."; sleep 10; continue; }
 
-  # Stage all changes
+  # Step 1: Add a character to the file
+  echo "a" >> "$FILE_NAME"  # Adds 'a' to the file
+
+  # Step 2: Stage all changes
   git add .
 
   # Commit the changes
-  git commit -m "$commit_message"
+  git commit -m "Add character 'a' - $commit_message"
 
   # Set the remote URL with token-based authentication
   git remote set-url origin $REMOTE_URL
@@ -36,8 +42,25 @@ while true; do
   # Push the changes to the remote repository
   git push origin main
 
-  echo "Changes committed and pushed successfully."
+  echo "Character 'a' added, changes committed, and pushed."
 
-  # Wait for 10 seconds before the next push
+  # Wait for 10 seconds
+  sleep 10
+
+  # Step 3: Remove the character 'a' from the file (simulating a delete)
+  sed -i '' 's/a//g' "$FILE_NAME"  # Removes 'a' from the file
+
+  # Step 4: Stage all changes again after modification
+  git add .
+
+  # Commit the changes (removing 'a')
+  git commit -m "Remove character 'a' - $commit_message"
+
+  # Push the changes to the remote repository
+  git push origin main
+
+  echo "Character 'a' removed, changes committed, and pushed."
+
+  # Wait for 10 seconds before the next modification cycle
   sleep 10
 done
