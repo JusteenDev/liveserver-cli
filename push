@@ -9,9 +9,15 @@ fi
 # Check if there are any changes
 git status --porcelain | grep -q . || { echo "No changes to commit."; exit 0; }
 
-# Ask the user for the repository URL (including personal access token)
-echo "Enter the repository URL (format: https://username:token@github.com/username/repo-name.git):"
-read REMOTE_URL
+# Set the username and personal access token (replace with your token)
+GIT_USERNAME="JusteenDev"
+GIT_TOKEN="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"
+
+# Define the repository URL (replace with the actual repo)
+REPO_URL="https://github.com/JusteenDev/liveserver-cli.git"
+
+# Full URL including token for authentication
+REMOTE_URL="https://$GIT_USERNAME:$GIT_TOKEN@$REPO_URL"
 
 # Commit message (automated)
 commit_message="Auto commit - $(date)"
@@ -22,7 +28,7 @@ git add .
 # Commit the changes
 git commit -m "$commit_message"
 
-# Set the remote URL with user input for authentication
+# Set the remote URL with token-based authentication
 git remote set-url origin $REMOTE_URL
 
 # Push the changes to the remote repository
