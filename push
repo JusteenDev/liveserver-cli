@@ -11,16 +11,16 @@ GIT_USERNAME="JusteenDev"
 GIT_TOKEN="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"
 
 # Define the repository URL (replace with the actual repo)
-REPO_URL="https://github.com/JusteenDev/liveserver-cli.git"
+REPO_URL="github.com/JusteenDev/liveserver-cli.git"
 
-# Correct URL without the extra https://
+# Full URL including token for authentication (note the removal of the extra https://)
 REMOTE_URL="https://$GIT_USERNAME:$GIT_TOKEN@$REPO_URL"
 
 # Commit message (automated)
 commit_message="Auto commit - $(date)"
 
 # Specify the file to modify
-FILE_NAME="index.js"
+FILE_NAME="./index.js"
 
 # Loop to modify, commit, and push every 10 seconds
 while true; do

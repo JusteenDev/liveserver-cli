@@ -83,6 +83,4 @@ function startServer(directory) {
 }
 
 // Parse the command-line arguments
-program.parse(process.argv);a
-a
-a
+program.parse(process.argv);
