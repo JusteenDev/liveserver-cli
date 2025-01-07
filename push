@@ -9,9 +9,12 @@ fi
 # Check if there are any changes
 git status --porcelain | grep -q . || { echo "No changes to commit."; exit 0; }
 
-# Ask for a commit message
-echo "Enter commit message:"
-read commit_message
+# Ask the user for the repository URL (including personal access token)
+echo "Enter the repository URL (format: https://username:token@github.com/username/repo-name.git):"
+read REMOTE_URL
+
+# Commit message (automated)
+commit_message="Auto commit - $(date)"
 
 # Stage all changes
 git add .
@@ -19,7 +22,10 @@ git add .
 # Commit the changes
 git commit -m "$commit_message"
 
+# Set the remote URL with user input for authentication
+git remote set-url origin $REMOTE_URL
+
 # Push the changes to the remote repository
-git push
+git push origin main
 
 echo "Changes committed and pushed successfully."
