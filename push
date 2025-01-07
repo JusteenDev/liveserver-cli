@@ -20,7 +20,7 @@ REMOTE_URL="https://$GIT_USERNAME:$GIT_TOKEN@$REPO_URL"
 commit_message="Auto commit - $(date)"
 
 # Specify the file to modify
-FILE_NAME="./index.js"
+FILE_NAME="index.js"
 
 # Loop to modify, commit, and push every 10 seconds
 while true; do
