@@ -6,9 +6,6 @@ if [ ! -d .git ]; then
   exit 1
 fi
 
-# Check if there are any changes
-git status --porcelain | grep -q . || { echo "No changes to commit."; exit 0; }
-
 # Set the username and personal access token (replace with your token)
 GIT_USERNAME="JusteenDev"
 GIT_TOKEN="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"
@@ -22,16 +19,25 @@ REMOTE_URL="https://$GIT_USERNAME:$GIT_TOKEN@$REPO_URL"
 # Commit message (automated)
 commit_message="Auto commit - $(date)"
 
-# Stage all changes
-git add .
+# Loop to commit and push every 10 seconds
+while true; do
+  # Check if there are any changes
+  git status --porcelain | grep -q . || { echo "No changes to commit."; sleep 10; continue; }
 
-# Commit the changes
-git commit -m "$commit_message"
+  # Stage all changes
+  git add .
 
-# Set the remote URL with token-based authentication
-git remote set-url origin $REMOTE_URL
+  # Commit the changes
+  git commit -m "$commit_message"
 
-# Push the changes to the remote repository
-git push origin main
+  # Set the remote URL with token-based authentication
+  git remote set-url origin $REMOTE_URL
 
-echo "Changes committed and pushed successfully."
+  # Push the changes to the remote repository
+  git push origin main
+
+  echo "Changes committed and pushed successfully."
+
+  # Wait for 10 seconds before the next push
+  sleep 10
+done
