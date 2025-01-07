@@ -32,7 +32,7 @@ program
 
         // Resolve the global liveserver directory and client folder
         const globalDir = stdout.trim();
-        const clientDir = path.resolve(globalDir, 'liveserver', 'client'); // Assuming 'client' folder is inside liveserver package
+        const clientDir = path.resolve(globalDir, 'liveserver-cli', 'client'); // Assuming 'client' folder is inside liveserver package
 
         // Check if the 'client' folder exists
         if (fs.existsSync(clientDir)) {

@@ -1,0 +1,25 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+# Ensure the user is in the git repository
+if [ ! -d .git ]; then
+  echo "This is not a git repository."
+  exit 1
+fi
+
+# Check if there are any changes
+git status --porcelain | grep -q . || { echo "No changes to commit."; exit 0; }
+
+# Ask for a commit message
+echo "Enter commit message:"
+read commit_message
+
+# Stage all changes
+git add .
+
+# Commit the changes
+git commit -m "$commit_message"
+
+# Push the changes to the remote repository
+git push
+
+echo "Changes committed and pushed successfully."
