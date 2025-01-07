@@ -20,14 +20,14 @@ REMOTE_URL="https://$GIT_USERNAME:$GIT_TOKEN@$REPO_URL"
 commit_message="Auto commit - $(date)"
 
 # Specify the file to modify
-FILE_NAME="your_file.txt"  # Replace this with your actual file name
+FILE_NAME="./index.js"
 
 # Loop to modify, commit, and push every 10 seconds
 while true; do
   # Check if there are any changes in the git repo
   git status --porcelain | grep -q . || { echo "No changes to commit."; sleep 10; continue; }
 
-  # Step 1: Add a character to the file
+  # Step 1: Add a character to the file (./index.js)
   echo "a" >> "$FILE_NAME"  # Adds 'a' to the file
 
   # Step 2: Stage all changes
@@ -42,7 +42,7 @@ while true; do
   # Push the changes to the remote repository
   git push origin main
 
-  echo "Character 'a' added, changes committed, and pushed."
+  echo "Character 'a' added to $FILE_NAME, changes committed, and pushed."
 
   # Wait for 10 seconds
   sleep 10
@@ -59,7 +59,7 @@ while true; do
   # Push the changes to the remote repository
   git push origin main
 
-  echo "Character 'a' removed, changes committed, and pushed."
+  echo "Character 'a' removed from $FILE_NAME, changes committed, and pushed."
 
   # Wait for 10 seconds before the next modification cycle
   sleep 10
