@@ -82,19 +82,20 @@ program
       // Serve a specific HTML file with live reload functionality
       getVersion((version) => {
         const resolvedHtmlFile = path.resolve(htmlFile);
+        const htmlDir = path.dirname(resolvedHtmlFile);
 
         if (fs.existsSync(resolvedHtmlFile) && path.extname(resolvedHtmlFile) === '.html') {
           const liveReloadServer = livereload.createServer();
+          liveReloadServer.watch(htmlDir);
 
-          liveReloadServer.watch(resolvedHtmlFile);
-
-          // Watch for changes to the HTML file and log them
-          chokidar.watch(resolvedHtmlFile).on('change', (filePath) => {
-            console.log(chalk.green(`[INFO] file changed: ${filePath}`));
+          // Watch for changes in the HTML directory
+          chokidar.watch(htmlDir).on('change', (filePath) => {
+            console.log(chalk.green(`[INFO] File changed: ${filePath}`));
             liveReloadServer.refresh(filePath);
           });
 
           app.use(connectLivereload());
+          app.use(express.static(htmlDir)); // Serve CSS, JS, and other static files from the same directory as the HTML
 
           app.get('/live', (req, res) => {
             res.sendFile(resolvedHtmlFile);
@@ -117,8 +118,8 @@ function startServer(port, version = 'unknown') {
 
   server.listen(port, () => {
     console.log(chalk.blue(`\nLiveserver v${version}\n`));
-    console.log(chalk.green("\tLocal Tool: "), chalk.yellow.underline(`http://localhost:${port}`));
-    console.log(chalk.green("\tLocal Html: "), chalk.yellow.underline(`http://localhost:${port}/live`));
+    console.log(chalk.green("   Local Tool: "), chalk.yellow.underline(`http://localhost:${port}`));
+    console.log(chalk.green("   Local Html: "), chalk.yellow.underline(`http://localhost:${port}/live`));
   });
 }
 
