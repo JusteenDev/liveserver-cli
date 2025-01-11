@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import http from 'http';
 import open from 'open';
-import chalk from 'chalk'
+import chalk from 'chalk';
 import express from 'express';
 import livereload from 'livereload';
 import connectLivereload from 'connect-livereload';
@@ -33,8 +33,17 @@ program
         }
         
         const globalDir = stdout.trim();
-        const clientDir = path.resolve(globalDir, 'liveserver-cli', 'client'); 
+        const clientDir = path.resolve(globalDir, 'liveserver-cli', 'client');
+        const jsonFilePath = path.resolve(globalDir, 'liveserver-cli', 'package.json');
         
+        // Read and parse the package.json inside the global 'liveserver-cli' directory
+        try {
+          const globalPackageJson = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'));
+          // console.log('Global liveserver-cli package.json:', globalPackageJson);
+        } catch (err) {
+          console.error('Error reading global liveserver-cli package.json:', err);
+        }
+
         if (fs.existsSync(clientDir)) {
           const liveReloadServer = livereload.createServer();
           liveReloadServer.watch(clientDir);
