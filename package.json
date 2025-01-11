@@ -1,6 +1,6 @@
 {
   "name": "liveserver-cli",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "run html using this tool",
   "main": "index.js",
   "bin": {
