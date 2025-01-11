@@ -10,6 +10,10 @@ import connectLivereload from 'connect-livereload';
 import { Command } from 'commander';
 import { exec } from 'child_process';
 
+// Read version from package.json
+const packageJson = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), 'package.json')));
+const version = packageJson.version || 'unknown';  // Default to 'unknown' if version is not found
+
 const app = express();
 const program = new Command();
 
@@ -70,7 +74,7 @@ function startServer(directory, port) {
   const server = http.createServer(app);
   
   server.listen(port, () => {
-    console.log(chalk.blue("\nLiveserver v0.0.5\n"))
+    console.log(chalk.blue(`\nLiveserver v${version}\n`))
     console.log(chalk.green("\tLocal: "), chalk.yellow.underline(`http://localhost:${port}`));
   });
 }
