@@ -1,6 +1,6 @@
 {
   "name": "liveserver-cli",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "description": "run html using this tool",
   "main": "index.js",
   "bin": {
@@ -11,7 +11,9 @@
   },
   "author": "Justeen0x24",
   "license": "ISC",
-  "keywords": ["liveserver"],
+  "keywords": [
+    "liveserver"
+  ],
   "dependencies": {
     "chalk": "^5.4.1",
     "chokidar": "^4.0.3",
