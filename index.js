@@ -17,9 +17,12 @@ program
   .argument('[html-file]', 'Path to a specific HTML file')
   .option('--tool', 'Use the default tool to serve the client folder')
   .option('--port <port>', 'Specify the port to run the server on', '3000')
+  .option('--livereload <lr-port>', 'Specify the LiveReload port', '35729')
   .description('Start a live server to serve HTML files')
   .action((htmlFile) => {
-    const port = program.opts().port;
+    const options = program.opts();
+    const port = options.port;
+    const lrPort = options.livereload;
 
     // Helper function to get the version from package.json
     const getVersion = (callback) => {
@@ -43,7 +46,26 @@ program
       });
     };
 
-    if (program.opts().tool) {
+    const startLiveServer = (baseDir, fileToServe) => {
+      const liveReloadServer = livereload.createServer({ port: lrPort });
+      liveReloadServer.watch(baseDir);
+
+      chokidar.watch(baseDir).on('change', (filePath) => {
+        console.log(chalk.green(`[INFO] File changed: ${filePath}`));
+        liveReloadServer.refresh(filePath);
+      });
+
+      app.use(connectLivereload());
+      app.use(express.static(baseDir));
+
+      app.get('*', (req, res) => {
+        res.sendFile(fileToServe || path.join(baseDir, 'index.html'));
+      });
+
+      getVersion((version) => startServer(port, lrPort, version));
+    };
+
+    if (options.tool) {
       // Serve files from the global `client` folder when `--tool` is used
       getVersion((version) => {
         exec('npm root -g', (error, stdout, stderr) => {
@@ -56,22 +78,7 @@ program
           const clientDir = path.resolve(globalDir, 'liveserver-cli', 'client');
 
           if (fs.existsSync(clientDir)) {
-            const liveReloadServer = livereload.createServer();
-            liveReloadServer.watch(clientDir);
-
-            chokidar.watch(clientDir).on('change', (filePath) => {
-              console.log(chalk.green(`[INFO] File changed: ${filePath}`));
-              liveReloadServer.refresh(filePath);
-            });
-
-            app.use(connectLivereload());
-            app.use(express.static(clientDir));
-
-            app.get('*', (req, res) => {
-              res.sendFile(path.join(clientDir, 'index.html'));
-            });
-
-            startServer(port, version);
+            startLiveServer(clientDir);
           } else {
             console.error(`The 'client' folder does not exist in the global directory.`);
             process.exit(1);
@@ -80,46 +87,29 @@ program
       });
     } else if (htmlFile) {
       // Serve a specific HTML file with live reload functionality
-      getVersion((version) => {
-        const resolvedHtmlFile = path.resolve(htmlFile);
-        const htmlDir = path.dirname(resolvedHtmlFile);
+      const resolvedHtmlFile = path.resolve(htmlFile);
+      const htmlDir = path.dirname(resolvedHtmlFile);
 
-        if (fs.existsSync(resolvedHtmlFile) && path.extname(resolvedHtmlFile) === '.html') {
-          const liveReloadServer = livereload.createServer();
-          liveReloadServer.watch(htmlDir);
-
-          // Watch for changes in the HTML directory
-          chokidar.watch(htmlDir).on('change', (filePath) => {
-            console.log(chalk.green(`[INFO] File changed: ${filePath}`));
-            liveReloadServer.refresh(filePath);
-          });
-
-          app.use(connectLivereload());
-          app.use(express.static(htmlDir)); // Serve CSS, JS, and other static files from the same directory as the HTML
-
-          app.get('/live', (req, res) => {
-            res.sendFile(resolvedHtmlFile);
-          });
-
-          startServer(port, version);
-        } else {
-          console.error(`The HTML file "${htmlFile}" does not exist or is not a valid HTML file.`);
-          process.exit(1);
-        }
-      });
+      if (fs.existsSync(resolvedHtmlFile) && path.extname(resolvedHtmlFile) === '.html') {
+        startLiveServer(htmlDir, resolvedHtmlFile);
+      } else {
+        console.error(`The HTML file "${htmlFile}" does not exist or is not a valid HTML file.`);
+        process.exit(1);
+      }
     } else {
       console.error('You need to either use --tool or specify an HTML file.');
       process.exit(1);
     }
   });
 
-function startServer(port, version = 'unknown') {
+function startServer(port, lrPort, version = 'unknown') {
   const server = http.createServer(app);
 
   server.listen(port, () => {
     console.log(chalk.blue(`\nLiveserver v${version}\n`));
     console.log(chalk.green("   Local Tool: "), chalk.yellow.underline(`http://localhost:${port}`));
     console.log(chalk.green("   Local Html: "), chalk.yellow.underline(`http://localhost:${port}/live`));
+    console.log(chalk.green("   LiveReload: "), chalk.yellow.underline(`http://localhost:${lrPort}`));
   });
 }
 
